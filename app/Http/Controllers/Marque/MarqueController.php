@@ -3,83 +3,61 @@
 namespace App\Http\Controllers\Marque;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Marque\StoreMarqueRequest;
+use App\Http\Requests\Marque\UpdateMarqueRequest;
+use App\Http\Resources\Marque\MarqueResource;
 use Illuminate\Http\Request;
+use App\Models\Marque;
 
 class MarqueController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
+
     public function index()
-    {
-        //
+    {  
+        $marque = Marque::all();
+        $marque = MarqueResource::collection($marque);
+        return $marque;
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
+    public function store(StoreMarqueRequest $request)
     {
-        //
+        $marque = new Marque;
+        $marque->title = $request->title;
+        $marque->save();
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        //
+        try {
+            $marque = Marque::findOrFail($id);
+            return $marque;
+        } catch (\Exception $e) {
+            return $e->getMessage();
+        };
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+
+
+
+    public function update(UpdateMarqueRequest $request, $id)
     {
-        //
+        $marque = Marque::find($id);
+        $marque->update($request->all());
+        return $marque;
+
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id)
-    {
-        //
-    }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function destroy($id)
+    public function delete($id)
     {
-        //
+        $marque=Marque::find($id);
+        $marque->delete();
+        return'deleted';
+    }
+    public function restore($id)
+    {
+        $marque=Marque::withTrashed()->find($id);
+        $marque->restore();
+        return'restored one';
     }
 }
